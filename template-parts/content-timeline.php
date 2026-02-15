@@ -99,6 +99,18 @@
 						<div class='argon-timeline-time'><?php echo mysql2date('m-d', $post -> post_date); ?></div>
 						<div class='argon-timeline-card card bg-gradient-secondary archive-timeline-title'>
 							<a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
+
+							<?php
+								// 获取该文章的标签
+								$post_tags = get_the_tags($post->ID); 
+								if ($post_tags) {
+									echo '<div class="archive-timeline-tags" style="margin-top: 4px; line-height: 1.2; display: flex; flex-wrap: wrap;">';
+									foreach ($post_tags as $tag) {
+										echo "<a href='" . get_tag_link($tag->term_id) . "' class='badge badge-pill badge-secondary mr-1 mt-1' style='font-size: 10px; font-weight: normal; opacity: 0.8; padding: 2px 6px; text-transform: none;'># " . $tag->name . "</a>";
+									}
+									echo '</div>';
+								}
+							?>
 						</div>
 					</div>
 					<?php
@@ -113,9 +125,10 @@
 		<div class="post-tags">
 			<i class="fa fa-tags" aria-hidden="true"></i>
 			<?php
+				// 这里的 $tag->term_id 应该使用 get_tag_link
 				$tags = get_the_tags();
 				foreach ($tags as $tag) {
-					echo "<a href='" . get_category_link($tag -> term_id) . "' target='_blank' class='tag badge badge-secondary post-meta-detail-tag'>" . $tag -> name . "</a>";
+					echo "<a href='" . get_tag_link($tag->term_id) . "' target='_blank' class='tag badge badge-secondary post-meta-detail-tag'>" . $tag->name . "</a>";
 				}
 			?>
 		</div>
