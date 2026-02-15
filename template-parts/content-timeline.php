@@ -120,7 +120,7 @@
 							// 获取该文章的标签
 							$post_tags = get_the_tags($post->ID); 
 							if ($post_tags) {
-								echo '<div class="archive-timeline-tags" style="margin-top: 6px; display: flex; flex-wrap: wrap;">';
+								echo '<div class="archive-timeline-tags" style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px; line-height: 1.6;">';
 								foreach ($post_tags as $tag) {
 									echo "<a href='" . get_tag_link($tag->term_id) . "' class='badge badge-pill badge-secondary mr-1 mt-1' style='font-size: 10px; font-weight: normal; opacity: 0.8; padding: 2px 6px; text-transform: none;'># " . $tag->name . "</a>";
 								}
