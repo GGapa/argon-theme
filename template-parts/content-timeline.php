@@ -98,20 +98,36 @@
 					<div class='argon-timeline-node'>
 						<div class='argon-timeline-time'><?php echo mysql2date('m-d', $post -> post_date); ?></div>
 						<div class='argon-timeline-card card bg-gradient-secondary archive-timeline-title'>
-							<a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
+						<div style="display: flex; align-items: center; flex-wrap: wrap;">
+							<a href="<?php the_permalink(); ?>" style="display: inline; margin-right: 5px;"><?php the_title(); ?></a>
 
 							<?php
-								// 获取该文章的标签
-								$post_tags = get_the_tags($post->ID); 
-								if ($post_tags) {
-									echo '<div class="archive-timeline-tags" style="margin-top: 4px; line-height: 1.2; display: flex; flex-wrap: wrap;">';
-									foreach ($post_tags as $tag) {
-										echo "<a href='" . get_tag_link($tag->term_id) . "' class='badge badge-pill badge-secondary mr-1 mt-1' style='font-size: 10px; font-weight: normal; opacity: 0.8; padding: 2px 6px; text-transform: none;'># " . $tag->name . "</a>";
+								// 获取该文章的分类
+								$categories = get_the_category($post->ID);
+								if ($categories) {
+									echo '<span style="color: var(--argon-body-color, #525f7f); font-size: 0.85em; opacity: 0.8;">('; 
+									$cat_links = array();
+									foreach ($categories as $category) {
+										$cat_links[] = '<a href="' . get_category_link($category->term_id) . '" style="color: inherit; text-decoration: none; border-bottom: 1px dashed transparent;" onmouseover="this.style.borderBottom=\'1px dashed\'" onmouseout="this.style.borderBottom=\'none\'">' . $category->name . '</a>';
 									}
-									echo '</div>';
+									echo implode(', ', $cat_links);
+									echo ')</span>';
 								}
 							?>
 						</div>
+						
+						<?php
+							// 获取该文章的标签
+							$post_tags = get_the_tags($post->ID); 
+							if ($post_tags) {
+								echo '<div class="archive-timeline-tags" style="margin-top: 6px; display: flex; flex-wrap: wrap;">';
+								foreach ($post_tags as $tag) {
+									echo "<a href='" . get_tag_link($tag->term_id) . "' class='badge badge-pill badge-secondary mr-1 mt-1' style='font-size: 10px; font-weight: normal; opacity: 0.8; padding: 2px 6px; text-transform: none;'># " . $tag->name . "</a>";
+								}
+								echo '</div>';
+							}
+						?>
+					</div>
 					</div>
 					<?php
 				}
