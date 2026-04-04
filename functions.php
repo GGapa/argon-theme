@@ -797,6 +797,11 @@ function get_ip_location($IP)
         // mkdir($cache_dir, 0777, true);	这是 Lucas 写的，但是我们可以调用 WP 自带的。
 		wp_mkdir_p($cache_dir);
     }
+	$index_file = $cache_dir . 'index.php';
+	if (!file_exists($index_file)) {
+		file_put_contents($index_file, "<?php\n// Silence is golden.\n");
+    }
+
     $cache_file = $cache_dir . md5($IP) . '.json';
     
     // 如果缓存文件存在且未过期，读取缓存
