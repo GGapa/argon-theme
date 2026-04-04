@@ -788,6 +788,43 @@ function parse_ua_and_icon($userAgent){
 	$out .= "</div>";
 	return apply_filters("argon_comment_ua_icon", $out);
 }
+//获取评论者归属地
+function get_ip_location($IP)
+{
+    $cache_base = WP_CONTENT_DIR . '/cache';
+	$cache_dir = $cache_base . '/argon_location/';
+    if (!is_dir($cache_dir)) {
+        // mkdir($cache_dir, 0777, true);	这是 Lucas 写的，但是我们可以调用 WP 自带的。
+		wp_mkdir_p($cache_dir);
+    }
+    $cache_file = $cache_dir . md5($IP) . '.json';
+    
+    // 如果缓存文件存在且未过期，读取缓存
+    if (file_exists($cache_file) && (filemtime($cache_file) > (time() - 30 * 24 * 3600))) {
+        $location_data = json_decode(file_get_contents($cache_file), true);
+    } else {
+        // API接口地址
+        $api_url = "https://api.mir6.com/api/ip";
+        $request_url = "$api_url?ip=$IP&type=json";
+        $response = file_get_contents($request_url);
+        $response_data = json_decode($response, true);
+
+        $location_data = [
+            'data' => [
+                'IP' => $IP,
+                'location' => isset($response_data['data']['location']) ? $response_data['data']['location'] : null
+            ]
+        ];
+        file_put_contents($cache_file, json_encode($location_data));
+    }
+
+    return isset($location_data['data']['location']) ? $location_data['data']['location'] : $IP;
+}
+function ip_location($IP)
+{
+    $location = get_ip_location($IP);
+    return '<div class="comment-useragent"><i class="fa fa-location-arrow" aria-hidden="true"></i> ' . $location . '</div>';
+}
 //发送邮件
 function send_mail($to, $subject, $content){
 	wp_mail($to, $subject, $content, array('Content-Type: text/html; charset=UTF-8'));
@@ -1099,6 +1136,9 @@ function argon_comment_format($comment, $args, $depth){
 					?>
 					<?php
 						echo parse_ua_and_icon($comment -> comment_agent);
+					?>
+					<?php
+						echo ip_location($comment -> comment_author_IP);
 					?>
 				</div>
 				<div class="comment-info">
